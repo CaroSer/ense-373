@@ -1,177 +1,264 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const path = require('path');
+const bodyParser = require('body-parser');
 const session = require('express-session');
-const db = require('./database');
-
+const mongoose = require('mongoose');
+require('dotenv').config();
+const passport = require('./passport-config');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const Account = require('./public/Models/Account');
+const User = require('./public/Models/User');
+const MedicalProvider = require('./public/Models/MedicalProvider');
+const Service = require('./public/Models/Service');
+const Appointment = require('./public/Models/Appointment');
 
-// Middleware
+
+mongoose.connect('mongodb://localhost:27017/medilocate');
+
+// Middleware to parse request body
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: true
-}));
+
+// Configure express-session
+app.use(
+  session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false },
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Set EJS as the view engine
+app.set('view engine', 'ejs');
+
+// Serve static files
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Routes
+// Middleware to check if user is authenticated
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) return next();
+  res.redirect('/services-catalog');
+}
+
+// Middleware to check role
+function isRole(role) {
+  return (req, res, next) => {
+    if (req.user && req.user.role === role) return next();
+    res.status(403).send('Unauthorized');
+  };
+}
+
+// Home page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'pages', 'login.html'));
+  console.log('Rendering home page');
+  res.render('login', { error: res.locals.error });
 });
 
-app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'pages', 'signup.html'));
+
+
+// Login Route
+app.post('/login', passport.authenticate('local', {
+  failureRedirect: '/',
+  successRedirect: '/services-catalog', // Default redirect
+}));
+
+// Logout Route
+app.get('/logout', (req, res) => {
+  req.logout(err => {
+    if (err) return next(err);
+    res.redirect('/');
+  });
+});
+
+// Signup Routes (User and MedicalProvider)
+
+app.get('/signup-user', (req, res) => {
+  res.render('signup-user');
+});
+
+app.post('/signup-user', async (req, res) => {
+  try {
+    const { email, password, name, phone } = req.body;
+    const account = await Account.create({ email, password, role: 'User' });
+    await User.create({ accountId: account._id, name, phone });
+    res.redirect('/');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error creating user');
+  }
 });
 
 app.get('/signup-medical', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'pages', 'signupmedical.html'));
+  res.render('signup-medical');
 });
 
-app.get('/profile', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'pages', 'profile.html'));
-});
-
-app.get('/services-catalog', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'pages', 'servicescatalog.html'));
-});
-
-app.get('/services-offered', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'pages', 'servicesoffered.html'));
-});
-
-app.get('/appointments', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'pages', 'appointments.html'));
-});
-
-app.get('/logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Internal Server Error');
-    } else {
-      res.redirect('/');
-    }
-  });
-});
-
-app.get('/get-profile', (req, res) => {
-  const accountId = req.session.accountId;
-  if (!accountId) {
-    return res.status(401).json({ error: 'Unauthorized' });
+app.post('/signup-medical', async (req, res) => {
+  try {
+    const { email, password, name, location } = req.body;
+    const account = await Account.create({ email, password, role: 'MedicalProvider' });
+    await MedicalProvider.create({ accountId: account._id, name, location });
+    res.redirect('/');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error creating medical provider');
   }
-  db.get('SELECT * FROM User JOIN Account ON User.AccountID = Account.AccountID WHERE User.AccountID = ?', [accountId], (err, row) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to retrieve profile' });
-    } else {
-      res.json({
-        name: row.Name,
-        dob: row.DOB,
-        email: row.Email,
-        address: row.Address,
-        contactNumber: row.ContactNumber,
-        city: row.City,
-        state: row.State
-      });
-    }
-  });
 });
-
-// Handle login form submission
-app.post('/', (req, res) => {
-  const { email, password } = req.body;
-  console.log(`Login attempt with email: ${email} and password: ${password}`);
-  db.get('SELECT * FROM Account WHERE Email = ? AND Password = ?', [email, password], (err, account) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Internal Server Error');
-    } else if (account) {
-      console.log('Login successful');
-      req.session.accountId = account.AccountID;
-      res.redirect('/services-catalog');
-    } else {
-      console.log('Login failed');
-      res.redirect('/');
-    }
-  });
-});
-
-// Handle signup form submission
-app.post('/signup', (req, res) => {
-  const { name, email, password } = req.body;
-  console.log(`Signup attempt with email: ${email}`);
-  db.run('INSERT INTO Account (Email, Password, IsMedicalProvider) VALUES (?, ?, ?)', [email, password, 0], function (err) {
-    if (err) {
-      console.error(err);
-      res.redirect('/signup');
-    } else {
-      const accountId = this.lastID;
-      db.run('INSERT INTO User (AccountID, Name) VALUES (?, ?)', [accountId, name], function (err) {
-        if (err) {
-          console.error(err);
-          res.redirect('/signup');
-        } else {
-          console.log('Signup successful');
-          req.session.accountId = accountId;
-          res.redirect('/services-catalog');
-        }
-      });
-    }
-  });
-});
-
-// Handle medical professional signup form submission
-app.post('/signup-medical', (req, res) => {
-  const { name, email, password, certificate } = req.body;
-  console.log(`Medical signup attempt with email: ${email}`);
-  db.run('INSERT INTO Account (Email, Password, IsMedicalProvider) VALUES (?, ?, ?)', [email, password, 1], function (err) {
-    if (err) {
-      console.error(err);
-      res.redirect('/signup-medical');
-    } else {
-      const accountId = this.lastID;
-      db.run('INSERT INTO MedicalProvider (AccountID, Certificate, IsAuthenticated) VALUES (?, ?, ?)', [accountId, certificate, 0], function (err) {
-        if (err) {
-          console.error(err);
-          res.redirect('/signup-medical');
-        } else {
-          console.log('Medical signup successful');
-          req.session.accountId = accountId;
-          res.redirect('/services-catalog');
-        }
-      });
-    }
-  });
-});
-
-// Handle profile update
-app.post('/update-profile', (req, res) => {
-  const { name, email, address, contactNumber, city, state } = req.body;
-  const accountId = req.session.accountId;
-  if (!accountId) {
-    return res.status(401).json({ error: 'Unauthorized' });
+// Services Catalog (Accessible to both roles)
+app.get('/services-catalog', isAuthenticated, async (req, res) => {
+  try {
+    const services = await Service.find().populate('medicalProviderId', 'name location');
+    res.render('services-catalog', { services, user: req.user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching services');
   }
-  console.log(`Updating profile for account ID: ${accountId}`);
-  db.run('UPDATE User SET Name = ?, Address = ?, ContactNumber = ?, City = ?, State = ? WHERE AccountID = ?',
-    [name, address, contactNumber, city, state, accountId], function (err) {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to update profile' });
-      } else {
-        db.run('UPDATE Account SET Email = ? WHERE AccountID = ?', [email, accountId], function (err) {
-          if (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Failed to update email' });
-          } else {
-            res.json({ success: 'Profile updated successfully' });
-          }
-        });
-      }
+});
+
+// Appointments Page
+app.get('/appointments', isAuthenticated, async (req, res) => {
+  try {
+    let appointments;
+    if (req.user.role === 'User') {
+      appointments = await Appointment.find({ userId: req.user._id })
+        .populate('serviceId')
+        .populate('medicalProviderId');
+    } else if (req.user.role === 'MedicalProvider') {
+      appointments = await Appointment.find({ medicalProviderId: req.user._id })
+        .populate('serviceId')
+        .populate('userId');
+    }
+    res.render('Appointments', { appointments, user: req.user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching appointments');
+  }
+});
+
+// Profile Page
+app.get('/profile', isAuthenticated, async (req, res) => {
+  try {
+    if (req.user.role === 'User') {
+      const profile = await User.findOne({ accountId: req.user._id });
+      res.render('Profile', { profile, user: req.user });
+    } else if (req.user.role === 'MedicalProvider') {
+      const profile = await MedicalProvider.findOne({ accountId: req.user._id });
+      res.render('Profile', { profile, user: req.user });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching profile');
+  }
+});
+
+// Services Offered (Medical Providers Only)
+app.get('/services-offered', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
+  try {
+    const services = await Service.find({ medicalProviderId: req.user._id });
+    res.render('services-offered', { services, user: req.user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching services');
+  }
+});
+app.post('/api/services', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
+  try {
+    const { name, description, cost, photo } = req.body;
+    const provider = await MedicalProvider.findOne({ accountId: req.user._id });
+    const service = await Service.create({
+      name,
+      description,
+      cost,
+      location: provider.location,
+      photo,
+      medicalProviderId: provider._id,
     });
+    res.status(201).json(service);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error creating service');
+  }
 });
+app.post('/api/appointments', isAuthenticated, isRole('User'), async (req, res) => {
+  try {
+    const { serviceId, appointmentDate } = req.body;
+    const service = await Service.findById(serviceId);
+    if (!service) return res.status(404).send('Service not found');
+
+    const appointment = await Appointment.create({
+      userId: req.user._id,
+      medicalProviderId: service.medicalProviderId,
+      serviceId,
+      appointmentDate,
+    });
+    res.status(201).json(appointment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error creating appointment');
+  }
+});
+app.delete('/api/appointments/:id', isAuthenticated, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const appointment = await Appointment.findById(id);
+    if (!appointment) return res.status(404).send('Appointment not found');
+
+    // Ensure only the relevant user or provider can cancel
+    if (
+      (req.user.role === 'User' && appointment.userId.toString() !== req.user._id.toString()) ||
+      (req.user.role === 'MedicalProvider' && appointment.medicalProviderId.toString() !== req.user._id.toString())
+    ) {
+      return res.status(403).send('Unauthorized');
+    }
+
+    await Appointment.findByIdAndDelete(id);
+    res.status(200).send('Appointment cancelled');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error cancelling appointment');
+  }
+});
+app.delete('/api/services/:id', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const service = await Service.findById(id);
+    if (!service) return res.status(404).send('Service not found');
+
+    if (service.medicalProviderId.toString() !== req.user._id.toString()) {
+      return res.status(403).send('Unauthorized');
+    }
+
+    await Service.findByIdAndDelete(id);
+    res.status(200).send('Service deleted');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error deleting service');
+  }
+});
+app.put('/api/profile', isAuthenticated, async (req, res) => {
+  try {
+    const updates = req.body;
+    if (req.user.role === 'User') {
+      await User.findOneAndUpdate({ accountId: req.user._id }, updates);
+    } else if (req.user.role === 'MedicalProvider') {
+      await MedicalProvider.findOneAndUpdate({ accountId: req.user._id }, updates);
+    }
+    res.status(200).send('Profile updated');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error updating profile');
+  }
+});
+
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
