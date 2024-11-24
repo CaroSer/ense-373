@@ -2,9 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const accountSchema = new mongoose.Schema({
+
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['User', 'MedicalProvider'], required: true }, // Role selection
+
 }, { timestamps: true });
 
 // Hash password before saving

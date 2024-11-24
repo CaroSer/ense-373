@@ -235,7 +235,6 @@ app.get('/api/services', isAuthenticated, isRole('MedicalProvider'), async (req,
   }
 });
 
-
 // Create a new service
 app.post('/api/services', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
   try {
@@ -252,7 +251,7 @@ app.post('/api/services', isAuthenticated, isRole('MedicalProvider'), async (req
       cost,
       location: provider.location,
       photo,
-      medicalProviderId: req.user._id,
+      medicalProviderId: provider._id,
     });
 
     provider.services.push(newService._id);
@@ -267,7 +266,6 @@ app.post('/api/services', isAuthenticated, isRole('MedicalProvider'), async (req
     res.status(500).send('Failed to create service.');
   }
 });
-
 
 // Delete a service
 app.delete('/api/services/:id', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
@@ -315,16 +313,23 @@ app.get('/api/services/catalog', isAuthenticated, async (req, res) => {
 //book service
 app.post('/api/appointments', isAuthenticated, isRole('User'), async (req, res) => {
   try {
-    const { serviceId, userId, appointmentDate } = req.body;
+    const { serviceId, appointmentDate } = req.body;
+
+    const user = await User.findOne({ accountId: req.user._id });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found for the given account.' });
+    }
+    const provider = await MedicalProvider.findOne({ services: serviceId });
 
     const service = await Service.findById(serviceId);
     if (!service) {
       return res.status(404).json({ error: 'Service not found.' });
     }
 
+
     const appointment = await Appointment.create({
-      userId,
-      medicalProviderId: service.medicalProviderId,
+      userId: user._id,
+      medicalProviderId: provider._id,
       serviceId,
       appointmentDate,
       status: 'Pending',
@@ -337,27 +342,50 @@ app.post('/api/appointments', isAuthenticated, isRole('User'), async (req, res) 
   }
 });
 
-// Get appointments
+
+//APPOINTMENTS
+// Get appointments based on user role
 app.get('/api/appointments', isAuthenticated, async (req, res) => {
   try {
+    console.log('Role:', req.user.role); // Debugging the role
+
     if (req.user.role === 'User') {
       // Fetch appointments booked by the user
-      const appointments = await Appointment.find({ userId: req.user._id })
-        .populate('serviceId', 'name description location cost')
+      console.log('Fetching appointments for user:', req.user._id);
+      const user = await User.findOne({ accountId: req.user._id });
+      const appointments = await Appointment.find({ userId: user._id })
+        .populate('serviceId', 'name description location cost medicalProviderId')
         .populate('medicalProviderId', 'name location');
-      res.json({ role: 'User', appointments });
+      console.log(appointments)
+
+      if (!appointments || appointments.length === 0) {
+        return res.status(404).json({ error: 'No appointments found for this user.' });
+      }
+
+      console.log('User appointments:', appointments);
+      return res.json(appointments);
     } else if (req.user.role === 'MedicalProvider') {
+
       // Fetch pending appointments for the medical provider
       const provider = await MedicalProvider.findOne({ accountId: req.user._id });
       if (!provider) {
         return res.status(404).json({ error: 'Medical Provider not found.' });
       }
+
+
       const appointments = await Appointment.find({ medicalProviderId: provider._id, status: 'Pending' })
-        .populate('serviceId', 'name description location cost')
-        .populate('userId', 'name phone');
-      res.json({ role: 'MedicalProvider', appointments });
+        .populate('serviceId', 'name description location cost medicalProviderId')
+        .populate('userId', 'name phone location accountId');
+      console.log('Populated appointments:', appointments);
+
+      if (!appointments) {
+        return res.status(404).json({ error: 'No pending appointments found for this provider.' });
+      }
+
+      console.log('Pending appointments for provider:', appointments);
+      res.json(appointments);
     } else {
-      res.status(403).json({ error: 'Invalid user role.' });
+      return res.status(403).json({ error: 'Invalid user role.' });
     }
   } catch (error) {
     console.error('Error fetching appointments:', error);
