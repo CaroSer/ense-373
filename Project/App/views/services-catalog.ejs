@@ -9,6 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="../styles.css">
+  <script src="../script.js"></script>
 </head>
 
 <body>
@@ -16,7 +17,7 @@
   <nav class="navbar navbar-light bg-light border-bottom">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
-        <img src="../img/image.png" alt="Medilocate Logo" class="logo">
+        <img src="../public/img/logo.png" alt="Medilocate Logo" class="logo">
       </a>
       <div class="d-flex align-items-center">
       </div>
@@ -70,14 +71,14 @@
         <!-- Search and Filter -->
         <div class="row mb-4">
           <div class="col-md-4">
-            <input type="text" class="form-control" placeholder="Search...">
+            <input type="text" class="form-control" id="search-bar" placeholder="Search services">
           </div>
           <div class="col-md-4">
-            <select class="form-select">
+            <select class="form-select" id="location-select">
               <option selected>Select Clinic Location</option>
-              <option value="1">Clinic A</option>
-              <option value="2">Clinic B</option>
-              <option value="3">Clinic C</option>
+              <option value="Clinic A">Clinic A</option>
+              <option value="Clinic B">Clinic B</option>
+              <option value="Clinic C">Clinic C</option>
             </select>
           </div>
           <div class="col-md-4">
@@ -85,41 +86,76 @@
           </div>
         </div>
 
+        <div id="results"></div>
+
+
         <!-- Service Cards -->
         <div class="row">
-          <div class="col-md-4 mb-4">
-            <div class="card h-100"
-              onclick="openServiceDetail('Service 1', 'Description of the service 1...', 'service1.jpg')">
-              <img src="../img/service1.jpg" class="card-img-top" alt="Service 1">
-              <div class="card-body">
-                <h5 class="card-title">Service 1</h5>
-                <p class="card-text">This is a short description of service 1.<br>Location: Clinic A</p>
+          <% services.forEach(service=> { %>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <img src="<%= service.photo %>" class="card-img-top" alt="<%= service.name %>">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <%= service.name %>
+                  </h5>
+                  <p class="card-text">
+                    <%= service.description %><br>Location: <%= service.location %>
+                  </p>
+                  <button class="btn btn-primary"
+                    onclick="openServiceDetail('<%= service.name %>', '<%= service.description %>', '<%= service.photo %>', '<%= service._id %>')">View
+                    Details</button>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div class="col-md-4 mb-4">
-            <div class="card h-100"
-              onclick="openServiceDetail('Service 2', 'Description of the service 2...', 'service2.jpg')">
-              <img src="../img/service2.jpg" class="card-img-top" alt="Service 2">
-              <div class="card-body">
-                <h5 class="card-title">Service 2</h5>
-                <p class="card-text">This is a short description of service 2.<br>Location: Clinic B</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4 mb-4">
-            <div class="card h-100"
-              onclick="openServiceDetail('Service 3', 'Description of the service 3...', 'service3.jpg')">
-              <img src="../img/service3.jpg" class="card-img-top" alt="Service 3">
-              <div class="card-body">
-                <h5 class="card-title">Service 3</h5>
-                <p class="card-text">This is a short description of service 3.<br>Location: Clinic C</p>
-              </div>
-            </div>
-          </div>
+            <% }) %>
         </div>
+
+        <script>
+          // Fetch and display services
+          document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/services')
+              .then(response => response.json())
+              .then(data => {
+                const resultsContainer = document.getElementById('results');
+                resultsContainer.innerHTML = '';
+
+                data.forEach(service => {
+                  const serviceCard = `
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <img src="${service.photo}" class="card-img-top" alt="${service.name}">
+                <div class="card-body">
+                  <h5 class="card-title">${service.name}</h5>
+                  <p class="card-text">${service.description}</p>
+                  <p class="card-text">Location: ${service.location}</p>
+                  <p class="card-text">Cost: $${service.cost}</p>
+                  <button class="btn btn-primary" onclick="bookService('${service._id}')">Book</button>
+                </div>
+              </div>
+            </div>
+          `;
+                  resultsContainer.innerHTML += serviceCard;
+                });
+              });
+          });
+
+          // Book service
+          function bookService(serviceId) {
+            const appointmentDate = prompt('Enter the date for your appointment (YYYY-MM-DD):');
+            if (!appointmentDate) return;
+
+            fetch('/api/appointments', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ serviceId, appointmentDate }),
+            })
+              .then(() => alert('Appointment booked!'))
+              .catch(err => console.error('Error booking appointment:', err));
+          }
+        </script>
+
+
 
       </main>
     </div>

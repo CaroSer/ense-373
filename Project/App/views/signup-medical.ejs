@@ -14,7 +14,7 @@
 
 <body>
   <div class="container-fluid vh-100">
-    <img src="../img/image.png" alt="Medilocate Logo" class="logo logo_in">
+    <img src="../public/img/logo.png" alt="Medilocate Logo" class="logo">
 
     <div class="row h-100">
       <!-- Left Column: Sign Up Form -->
@@ -23,35 +23,33 @@
           <div class="mb-4 text-center">
             <h2 class="mt-3">Sign up</h2>
           </div>
-
-          <form action="/signup" method="POST">
+          <form action="/signup-medical" method="POST">
             <div class="form-group mb-3">
               <label for="name" class="form-label">Your Name</label>
-              <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" value="">
+              <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
             </div>
 
             <div class="form-group mb-3">
               <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+              <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
             </div>
 
             <div class="form-group mb-3">
               <label for="password" class="form-label">Password</label>
-              <div class="input-group">
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
-                <button type="button" class="input-group-text" id="eye-icon"
-                  onclick="togglePasswordVisibility()">👁</button>
-              </div>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Enter password"
+                required>
             </div>
 
             <div class="form-group mb-3">
-              <label for="certificate" class="form-label">Medical Certificate</label>
-              <input type="file" class="form-control" id="certificate" name="certificate"
-                placeholder="Upload your medical certificate">
+              <label for="location" class="form-label">Clinic Location</label>
+              <input type="text" class="form-control" id="location" name="location" placeholder="Enter clinic location"
+                required>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Sign up</button>
           </form>
+
+
 
           <div class="text-center mt-3">
             <p>or</p>
@@ -62,7 +60,7 @@
 
       <!-- Right Column: Image -->
       <div class="col-lg-6 d-none d-lg-block p-0">
-        <img src="../img/img_login.jpg" style="margin-top:-51px" alt="Login Image" class="img-fluid vh-100 w-100"
+        <img src="../public/img/img_login.jpg" style="margin-top:-51px" alt="Login Image" class="img-fluid vh-100 w-100"
           style="object-fit: cover;">
       </div>
     </div>
