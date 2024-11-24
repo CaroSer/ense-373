@@ -51,9 +51,11 @@ $(document).ready(function () {
               <p class="card-text"><strong>Cost:</strong> $${service.cost}</p>
               <p class="card-text">Location: ${service.location}</p>
             </div>
-            <div class="card-footer">
-              <button class="btn btn-primary" onclick="bookService('${service._id}', '${service.name}', '${service.medicalProviderId.name}')">Book</button>
-            </div>
+            ${currentUser.role !== 'MedicalProvider' ? `
+              <div class="card-footer">
+                <button class="btn btn-primary" onclick="bookService('${service._id}', '${service.name}', '${service.medicalProviderId.name}')">Book</button>
+              </div>
+            ` : ''}
           </div>
         </div>`;
       $('#services-container').append(serviceCard);
@@ -63,8 +65,9 @@ $(document).ready(function () {
   // Open the booking modal
   window.bookService = function (serviceId, serviceName, providerName) {
     selectedService = serviceId; // Store the selected service ID
-    $('#appointment-service-name').val(serviceName);
-    $('#bookAppointmentModal').modal('show');
+    $('#appointment').text(serviceName);
+    $('#bookAppointmentModal').modal('show')
+      ;
   };
 
   // Handle form submission for booking an appointment
