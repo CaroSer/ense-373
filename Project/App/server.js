@@ -312,6 +312,59 @@ app.get('/api/services/catalog', isAuthenticated, async (req, res) => {
   }
 });
 
+//book service
+app.post('/api/appointments', isAuthenticated, isRole('User'), async (req, res) => {
+  try {
+    const { serviceId, userId, appointmentDate } = req.body;
+
+    const service = await Service.findById(serviceId);
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found.' });
+    }
+
+    const appointment = await Appointment.create({
+      userId,
+      medicalProviderId: service.medicalProviderId,
+      serviceId,
+      appointmentDate,
+      status: 'Pending',
+    });
+
+    res.status(201).json(appointment);
+  } catch (error) {
+    console.error('Error booking appointment:', error);
+    res.status(500).send('Failed to book appointment.');
+  }
+});
+
+// Get appointments
+app.get('/api/appointments', isAuthenticated, async (req, res) => {
+  try {
+    if (req.user.role === 'User') {
+      // Fetch appointments booked by the user
+      const appointments = await Appointment.find({ userId: req.user._id })
+        .populate('serviceId', 'name description location cost')
+        .populate('medicalProviderId', 'name location');
+      res.json({ role: 'User', appointments });
+    } else if (req.user.role === 'MedicalProvider') {
+      // Fetch pending appointments for the medical provider
+      const provider = await MedicalProvider.findOne({ accountId: req.user._id });
+      if (!provider) {
+        return res.status(404).json({ error: 'Medical Provider not found.' });
+      }
+      const appointments = await Appointment.find({ medicalProviderId: provider._id, status: 'Pending' })
+        .populate('serviceId', 'name description location cost')
+        .populate('userId', 'name phone');
+      res.json({ role: 'MedicalProvider', appointments });
+    } else {
+      res.status(403).json({ error: 'Invalid user role.' });
+    }
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    res.status(500).json({ error: 'Failed to fetch appointments.' });
+  }
+});
+
 
 
 

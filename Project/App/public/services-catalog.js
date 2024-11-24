@@ -1,5 +1,6 @@
 $(document).ready(function () {
   let currentUser;
+  let selectedService = null;
 
   // Fetch the current user
   function fetchCurrentUser() {
@@ -21,8 +22,7 @@ $(document).ready(function () {
     });
   }
 
-
-  // Fetch all services offered by the current Medical Provider
+  // Fetch all services
   function fetchServices() {
     $.ajax({
       url: '/api/services/catalog',
@@ -37,7 +37,7 @@ $(document).ready(function () {
     });
   }
 
-  // Render the services offered
+  // Render the services
   function renderServices(services) {
     $('#services-container').empty();
     services.forEach(service => {
@@ -52,7 +52,7 @@ $(document).ready(function () {
               <p class="card-text">Location: ${service.location}</p>
             </div>
             <div class="card-footer">
-              <button class="btn btn-primary" onclick="bookService('${service._id}')">Book</button>
+              <button class="btn btn-primary" onclick="bookService('${service._id}', '${service.name}', '${service.medicalProviderId.name}')">Book</button>
             </div>
           </div>
         </div>`;
@@ -60,7 +60,45 @@ $(document).ready(function () {
     });
   }
 
+  // Open the booking modal
+  window.bookService = function (serviceId, serviceName, providerName) {
+    selectedService = serviceId; // Store the selected service ID
+    $('#appointment-service-name').val(serviceName);
+    $('#bookAppointmentModal').modal('show');
+  };
 
+  // Handle form submission for booking an appointment
+  $('#book-appointment-form').submit(function (e) {
+    e.preventDefault(); // Prevent page reload
+
+    if (!currentUser || !selectedService) {
+      alert('Unable to book appointment. Please try again.');
+      return;
+    }
+
+    const appointmentData = {
+      serviceId: selectedService,
+      userId: currentUser._id,
+      appointmentDate: $('#appointment-date').val(),
+    };
+
+    $.ajax({
+      url: '/api/appointments',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(appointmentData),
+      success: function () {
+        alert('Appointment booked successfully!');
+        $('#bookAppointmentModal').modal('hide'); // Close the modal
+      },
+      error: function (err) {
+        console.error('Error booking appointment:', err);
+        alert('Failed to book appointment. Please try again.');
+      }
+    });
+  });
+
+  // Search functionality
   const searchBar = document.getElementById('search-bar');
   searchBar.addEventListener('input', function () {
     const query = searchBar.value.toLowerCase();
@@ -74,7 +112,6 @@ $(document).ready(function () {
       }
     });
   });
-
 
   // Initial fetch
   fetchCurrentUser();
