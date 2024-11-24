@@ -34,6 +34,7 @@ a:hover {
 .text-center {
   margin-bottom: 30px;/* Sidebar Styles */
   .sidebar {
+    min-height: 100vh; 
     position: fixed;
     top: 0;
     bottom: 0;
@@ -55,7 +56,7 @@ a:hover {
   
   /* Header styles */
   .navbar-light {
-    background-color: #fff;
+    background-color: #f6bfbf;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   

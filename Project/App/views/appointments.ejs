@@ -8,7 +8,10 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../public/styles.css">
+  <!-- Bootstrap and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
@@ -26,7 +29,8 @@
   <div class="container-fluid">
     <div class="row">
       <!-- Sidebar -->
-      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar" style="
+      min-height: 100vh; background-color: rgba(136, 161, 181, 0.097) !important; ">
         <div class="position-sticky pt-3">
           <ul class="nav flex-column">
 
@@ -35,26 +39,28 @@
                 Services Catalog
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/services-offered">
-                Services Offered
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/appointments">
-                Appointments
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/profile">
-                Profile
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                Logout
-              </a>
-            </li>
+            <% if (user.role==='MedicalProvider' ) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/services-offered">
+                  Services Offered
+                </a>
+              </li>
+              <% } %>
+                <li class="nav-item">
+                  <a class="nav-link" href="/appointments">
+                    Appointments
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="/profile">
+                    Profile
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/">
+                    Logout
+                  </a>
+                </li>
           </ul>
         </div>
       </nav>
@@ -72,46 +78,6 @@
         </div>
       </main>
 
-      <script>
-        // Fetch appointments dynamically
-        document.addEventListener('DOMContentLoaded', () => {
-          fetch('/api/appointments')
-            .then(response => response.json())
-            .then(data => {
-              const appointmentsContainer = document.getElementById('appointments');
-              appointmentsContainer.innerHTML = '';
-
-              data.forEach(appointment => {
-                const appointmentCard = `
-                  <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                      <img src="${appointment.service.photo}" class="card-img-top" alt="Service">
-                      <div class="card-body">
-                        <h5 class="card-title">${appointment.service.name}</h5>
-                        <p class="card-text">Date: ${new Date(appointment.appointmentDate).toLocaleDateString()}</p>
-                        <p class="card-text">Location: ${appointment.service.location}</p>
-                        <button class="btn btn-danger" onclick="cancelAppointment('${appointment._id}')">Cancel</button>
-                      </div>
-                    </div>
-                  </div>
-                `;
-                appointmentsContainer.innerHTML += appointmentCard;
-              });
-            });
-        });
-
-        // Cancel appointment
-        function cancelAppointment(appointmentId) {
-          fetch(`/api/appointments/${appointmentId}`, { method: 'DELETE' })
-            .then(() => location.reload())
-            .catch(err => console.error('Error cancelling appointment:', err));
-        }
-      </script>
-
-      <!-- Bootstrap and jQuery -->
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-      <script src="js/app.js"></script>
 </body>
 
 </html>

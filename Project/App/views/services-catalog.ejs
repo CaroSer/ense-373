@@ -8,8 +8,13 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="../styles.css">
-  <script src="../script.js"></script>
+  <link rel="stylesheet" href="../public/styles.css">
+  <!-- Bootstrap and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Custom JS -->
+  <script src="../public/script.js"></script>
 </head>
 
 <body>
@@ -28,7 +33,8 @@
   <div class="container-fluid">
     <div class="row">
       <!-- Sidebar -->
-      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar" style="
+      min-height: 100vh; background-color: rgba(136, 161, 181, 0.097) !important; ">
         <div class="position-sticky pt-3">
           <ul class="nav flex-column">
 
@@ -37,26 +43,30 @@
                 Services Catalog
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/services-offered">
-                Services Offered
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/appointments">
-                Appointments
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/profile">
-                Profile
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                Logout
-              </a>
-            </li>
+
+            <% if (user.role==='MedicalProvider' ) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/services-offered">
+                  Services Offered
+                </a>
+              </li>
+              <% } %>
+
+                <li class="nav-item">
+                  <a class="nav-link" href="/appointments">
+                    Appointments
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="/profile">
+                    Profile
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/">
+                    Logout
+                  </a>
+                </li>
           </ul>
         </div>
       </nav>
@@ -74,14 +84,6 @@
             <input type="text" class="form-control" id="search-bar" placeholder="Search services">
           </div>
           <div class="col-md-4">
-            <select class="form-select" id="location-select">
-              <option selected>Select Clinic Location</option>
-              <option value="Clinic A">Clinic A</option>
-              <option value="Clinic B">Clinic B</option>
-              <option value="Clinic C">Clinic C</option>
-            </select>
-          </div>
-          <div class="col-md-4">
             <button class="btn btn-primary">Search</button>
           </div>
         </div>
@@ -91,134 +93,16 @@
 
         <!-- Service Cards -->
         <div class="row">
-          <% services.forEach(service=> { %>
-            <div class="col-md-4 mb-4">
-              <div class="card h-100">
-                <img src="<%= service.photo %>" class="card-img-top" alt="<%= service.name %>">
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <%= service.name %>
-                  </h5>
-                  <p class="card-text">
-                    <%= service.description %><br>Location: <%= service.location %>
-                  </p>
-                  <button class="btn btn-primary"
-                    onclick="openServiceDetail('<%= service.name %>', '<%= service.description %>', '<%= service.photo %>', '<%= service._id %>')">View
-                    Details</button>
-                </div>
-              </div>
-            </div>
-            <% }) %>
+
         </div>
-
-        <script>
-          // Fetch and display services
-          document.addEventListener('DOMContentLoaded', () => {
-            fetch('/api/services')
-              .then(response => response.json())
-              .then(data => {
-                const resultsContainer = document.getElementById('results');
-                resultsContainer.innerHTML = '';
-
-                data.forEach(service => {
-                  const serviceCard = `
-            <div class="col-md-4 mb-4">
-              <div class="card h-100">
-                <img src="${service.photo}" class="card-img-top" alt="${service.name}">
-                <div class="card-body">
-                  <h5 class="card-title">${service.name}</h5>
-                  <p class="card-text">${service.description}</p>
-                  <p class="card-text">Location: ${service.location}</p>
-                  <p class="card-text">Cost: $${service.cost}</p>
-                  <button class="btn btn-primary" onclick="bookService('${service._id}')">Book</button>
-                </div>
-              </div>
-            </div>
-          `;
-                  resultsContainer.innerHTML += serviceCard;
-                });
-              });
-          });
-
-          // Book service
-          function bookService(serviceId) {
-            const appointmentDate = prompt('Enter the date for your appointment (YYYY-MM-DD):');
-            if (!appointmentDate) return;
-
-            fetch('/api/appointments', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ serviceId, appointmentDate }),
-            })
-              .then(() => alert('Appointment booked!'))
-              .catch(err => console.error('Error booking appointment:', err));
-          }
-        </script>
-
-
-
       </main>
     </div>
   </div>
 
-  <!-- Service Detail Modal -->
-  <div class="modal fade" id="serviceDetailModal" tabindex="-1" aria-labelledby="serviceDetailLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="serviceDetailLabel">Service Name</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <!-- Service Image -->
-            <div class="col-md-6">
-              <img id="serviceImage" src="" alt="Service Image" class="img-fluid">
-            </div>
-            <!-- Service Details -->
-            <div class="col-md-6">
-              <h4>Description</h4>
-              <p id="serviceDescription"></p>
 
-              <h4>Key Aspects</h4>
-              <ul>
-                <li>How the Consultation Works</li>
-                <li>Location</li>
-                <li>Cost and Insurance</li>
-              </ul>
 
-              <!-- Booking Form -->
-              <form>
-                <div class="mb-3">
-                  <label for="date" class="form-label">Date</label>
-                  <input type="date" class="form-control" id="date">
-                </div>
-                <button type="submit" class="btn btn-success w-100">Book</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Bootstrap and jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Custom JS -->
-  <script>
-    function openServiceDetail(name, description, image) {
-      // Set modal title, description, and image
-      document.getElementById('serviceDetailLabel').innerText = name;
-      document.getElementById('serviceDescription').innerText = description;
-      document.getElementById('serviceImage').src = image;
-
-      // Show the modal
-      var serviceDetailModal = new bootstrap.Modal(document.getElementById('serviceDetailModal'));
-      serviceDetailModal.show();
-    }
-  </script>
 </body>
 
 </html>
