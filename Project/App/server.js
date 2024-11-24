@@ -1,13 +1,12 @@
 const dotenv = require('dotenv');
 dotenv.config();
 const express = require('express');
-const router = express.Router();
 const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const mongoose = require('mongoose');
 require('dotenv').config();
-const passport = require('./passport-config');
+const passport = require('./database/passport-config');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const Account = require('./public/Models/Account');
@@ -152,6 +151,8 @@ app.get('/logout', (req, res) => {
 
 //APIS
 
+
+//SINGUP
 //Singup user 
 app.post('/signup-user', async (req, res) => {
   try {
@@ -178,7 +179,7 @@ app.post('/signup-medical', async (req, res) => {
   }
 });
 
-
+//PROFILE
 // Get Profile
 app.get('/api/get-profile', isAuthenticated, async (req, res) => {
   try {
@@ -211,6 +212,105 @@ app.put('/api/profile', isAuthenticated, async (req, res) => {
   }
 });
 
+
+//SERVICES
+app.get('/current-user', isAuthenticated, (req, res) => {
+  res.json(req.user); // Assuming `req.user` contains user details from session
+});
+
+//SERVICES OFFERED
+// Get services offered by a medical provider
+app.get('/api/services', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
+  try {
+    const provider = await MedicalProvider.findOne({ accountId: req.user._id }).populate('services');
+    if (!provider) {
+      return res.status(404).json({ error: 'Medical Provider not found.' });
+    }
+
+    console.log('Services offered:', provider.services); // Debugging
+    res.json(provider.services); // Send populated services
+  } catch (error) {
+    console.error('Error fetching services:', error);
+    res.status(500).json({ error: 'Failed to fetch services.' });
+  }
+});
+
+
+// Create a new service
+app.post('/api/services', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
+  try {
+    const { name, description, cost, photo } = req.body;
+
+    const provider = await MedicalProvider.findOne({ accountId: req.user._id });
+    if (!provider) {
+      return res.status(404).send('Medical Provider not found.');
+    }
+
+    const newService = await Service.create({
+      name,
+      description,
+      cost,
+      location: provider.location,
+      photo,
+      medicalProviderId: req.user._id,
+    });
+
+    provider.services.push(newService._id);
+    await provider.save();
+
+    // Refetch the updated provider with populated services
+    const updatedProvider = await MedicalProvider.findOne({ accountId: req.user._id }).populate('services');
+
+    res.status(201).json(updatedProvider.services);
+  } catch (error) {
+    console.error('Error creating service:', error);
+    res.status(500).send('Failed to create service.');
+  }
+});
+
+
+// Delete a service
+app.delete('/api/services/:id', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
+  try {
+    const serviceId = req.params.id;
+
+    // Fetch the service to verify ownership
+    const service = await Service.findById(serviceId);
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found.' });
+    }
+
+
+    // Remove the service from the MedicalProvider's services array
+    await MedicalProvider.findByIdAndUpdate(service.medicalProviderId, {
+      $pull: { services: serviceId },
+    });
+
+    // Delete the service
+    await Service.findByIdAndDelete(serviceId);
+
+    res.status(200).json({ message: 'Service deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting service:', error);
+    res.status(500).json({ error: 'Failed to delete service.' });
+  }
+});
+
+
+
+// SERVICES CATALOG
+// Get all services
+app.get('/api/services/catalog', isAuthenticated, async (req, res) => {
+  try {
+    const services = await Service.find();
+    res.json(services);
+    console.log('Fetched services:', services);
+
+  } catch (error) {
+    console.error('Error fetching services:', error);
+    res.status(500).json({ error: 'Failed to fetch services.' });
+  }
+});
 
 
 

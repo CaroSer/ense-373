@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-const Account = require('./public/Models/Account');
-const User = require('./public/Models/User');
-const MedicalProvider = require('./public/Models/MedicalProvider');
-const Service = require('./public/Models/Service');
-const Appointment = require('./public/Models/Appointment');
+const Account = require('../public/Models/Account');
+const User = require('../public/Models/User');
+const MedicalProvider = require('../public/Models/MedicalProvider');
+const Service = require('../public/Models/Service');
+const Appointment = require('../public/Models/Appointment');
 
 mongoose.connect('mongodb://localhost:27017/medilocate');
 

@@ -9,4 +9,9 @@ const medicalProviderSchema = new mongoose.Schema({
   pendingAppointments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' }], // Pending appointments
 }, { timestamps: true });
 
+medicalProviderSchema.post('save', function (doc) {
+  console.log(`MedicalProvider ${doc._id} updated with services:`, doc.services);
+});
+
+
 module.exports = mongoose.model('MedicalProvider', medicalProviderSchema);
