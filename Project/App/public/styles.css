@@ -102,3 +102,20 @@ a:hover {
   z-index: 1000; /* Ensure it appears above other elements */
 }
 
+.popover-message {
+  color: #333;
+  font-size: 14px;
+  text-align: center;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+.popover-success {
+  border-color: #28a745;
+  background-color: #d4edda;
+  color: #155724;
+}
+.popover-error {
+  border-color: #dc3545;
+  background-color: #f8d7da;
+  color: #721c24;
+}
+

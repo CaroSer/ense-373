@@ -294,6 +294,37 @@ app.delete('/api/services/:id', isAuthenticated, isRole('MedicalProvider'), asyn
   }
 });
 
+// Update a service
+app.put('/api/services/:id', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
+  try {
+    const serviceId = req.params.id;
+    const { name, description, cost, location } = req.body;
+    console.error(req.body);
+
+    // Check for missing fields
+    if (!name || !description || !cost || !location) {
+      return res.status(400).json({ error: 'All fields (name, description, cost, location) are required.' });
+    }
+
+    const service = await Service.findById(serviceId);
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found.' });
+    }
+
+    service.name = name;
+    service.description = description;
+    service.cost = cost;
+    service.location = location;
+
+    await service.save();
+
+    res.status(200).json({ message: 'Service updated successfully.' });
+  } catch (error) {
+    console.error('Error updating service:', error);
+    res.status(500).json({ error: 'Failed to update service.' });
+  }
+});
+
 
 
 // SERVICES CATALOG
@@ -393,6 +424,26 @@ app.get('/api/appointments', isAuthenticated, async (req, res) => {
   }
 });
 
+// Cancel an appointment
+app.delete('/api/appointments/:id', isAuthenticated, async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found.' });
+    }
+
+
+    // Delete or update the appointment
+    await Appointment.findByIdAndDelete(appointmentId);
+
+    res.status(200).json({ message: 'Appointment cancelled successfully.' });
+  } catch (error) {
+    console.error('Error cancelling appointment:', error);
+    res.status(500).json({ error: 'Failed to cancel appointment.' });
+  }
+});
 
 
 

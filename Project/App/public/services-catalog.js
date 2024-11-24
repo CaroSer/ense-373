@@ -66,16 +66,29 @@ $(document).ready(function () {
   window.bookService = function (serviceId, serviceName, providerName) {
     selectedService = serviceId; // Store the selected service ID
     $('#appointment').text(serviceName);
-    $('#bookAppointmentModal').modal('show')
-      ;
+    $('#bookAppointmentModal').modal('show');
   };
+
+  // Function to show the popover message
+  function showPopover(message, type) {
+    const popover = $('#message-popover');
+    popover
+      .removeClass('popover-success popover-error')
+      .addClass(type === 'success' ? 'popover-success' : 'popover-error')
+      .text(message)
+      .fadeIn(300);
+
+    setTimeout(() => {
+      popover.fadeOut(300);
+    }, 3000);
+  }
 
   // Handle form submission for booking an appointment
   $('#book-appointment-form').submit(function (e) {
     e.preventDefault(); // Prevent page reload
 
     if (!currentUser || !selectedService) {
-      alert('Unable to book appointment. Please try again.');
+      showPopover('Unable to book appointment. Please try again.', 'error');
       return;
     }
 
@@ -91,15 +104,17 @@ $(document).ready(function () {
       contentType: 'application/json',
       data: JSON.stringify(appointmentData),
       success: function () {
-        alert('Appointment booked successfully!');
+        showPopover('Appointment booked successfully!', 'success');
         $('#bookAppointmentModal').modal('hide'); // Close the modal
       },
       error: function (err) {
         console.error('Error booking appointment:', err);
-        alert('Failed to book appointment. Please try again.');
+        showPopover('Failed to book appointment. Please try again.', 'error');
       }
     });
   });
+
+
 
   // Search functionality
   const searchBar = document.getElementById('search-bar');

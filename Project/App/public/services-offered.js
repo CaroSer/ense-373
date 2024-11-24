@@ -1,5 +1,7 @@
 $(document).ready(function () {
   let currentUser;
+  let selectedService = null;
+
 
   // Fetch the current user
   function fetchCurrentUser() {
@@ -30,13 +32,15 @@ $(document).ready(function () {
       contentType: 'application/json',
       data: JSON.stringify(serviceData),
       success: function (newService) {
-        console.log('Service added successfully:', newService);
+        showPopover('Service added successfully!', 'success');
         $('#newServiceModal').modal('hide'); // Close the modal
         fetchServices(); // Refresh the service list
       },
       error: function (err) {
         console.error('Error adding service:', err);
-        alert('Failed to add service. Please try again.');
+        showPopover('Failed to add service. Please try again.', 'error');
+        $('#newServiceModal').modal('hide'); // Close the modal
+
       }
     });
   }
@@ -71,6 +75,7 @@ $(document).ready(function () {
               <p class="card-text"><strong>Cost:</strong> $${service.cost}</p>
             </div>
             <div class="card-footer">
+              <button class="btn btn-primary edit-service-button" data-service-id="${service._id}">Edit</button>
               <button class="btn btn-danger delete-service-button" data-service-id="${service._id}">Delete</button>
             </div>
           </div>
@@ -85,8 +90,65 @@ $(document).ready(function () {
       const alertContainer = $(this).closest('.col').find('.alert-container');
       handleDelete(serviceId, alertContainer, $(this));
     });
-  }
 
+
+    $('.edit-service-button').click(function () {
+      const serviceId = $(this).data('service-id');
+      selectedService = services.find(service => service._id === serviceId); // Assign selected service globally
+
+      // Populate the edit form with service details
+      $('#edit-service-name').val(selectedService.name);
+      $('#edit-service-description').val(selectedService.description);
+      $('#edit-service-cost').val(selectedService.cost);
+      $('#edit-service-location').val(selectedService.location || ''); // Handle optional fields
+      $('#editServiceModal').modal('show');
+    });
+
+  }
+  // Handle form submission for editing a service
+  $('#edit-service-form').submit(function (e) {
+    e.preventDefault(); // Prevent page reload
+
+    if (!selectedService) {
+      alert('No service selected for editing.');
+      return;
+    }
+
+    const formData = {
+      _id: selectedService._id,
+      name: $('#edit-service-name').val(),
+      description: $('#edit-service-description').val(),
+      cost: parseFloat($('#edit-service-cost').val()),
+      location: $('#edit-service-location').val(),
+      photo: $('#edit-service-photo')[0].files[0] ? $('#edit-service-photo')[0].files[0].name : selectedService.photo // Use existing photo if no new file
+    };
+
+    // Validate input
+    if (!formData.name || !formData.description || isNaN(formData.cost)) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
+    updateService(formData); // Call the update function
+  });
+
+
+  function updateService(serviceData) {
+    $.ajax({
+      url: `/api/services/${serviceData._id}`,
+      method: 'PUT',
+      contentType: 'application/json', // Ensure data is sent as JSON
+      data: JSON.stringify(serviceData), // Serialize the service data
+      success: function () {
+        showPopover('Service updated successfully!', 'success');
+        $('#editServiceModal').modal('hide');
+        fetchServices(); // Refresh the service list
+      },
+      error: function () {
+        showPopover('Failed to update service. Please try again.', 'error');
+      }
+    });
+  }
 
 
   function handleDelete(serviceId, alertContainer, button) {
@@ -128,19 +190,13 @@ $(document).ready(function () {
       url: `/api/services/${serviceId}`,
       method: 'DELETE',
       success: function () {
-        alertContainer.html(`
-          <div class="alert alert-success" role="alert">
-            Service deleted successfully.
-          </div>
-        `).fadeIn().delay(3000).fadeOut();
+        showPopover('Service deleted successfully!', 'success');
+
         fetchServices(); // Refresh the service list
       },
       error: function () {
-        alertContainer.html(`
-          <div class="alert alert-danger" role="alert">
-            Failed to delete service. Please try again.
-          </div>
-        `).fadeIn().delay(3000).fadeOut();
+        showPopover('Failed to delete service. Please try again.', 'error');
+        ;
       }
     });
   }
@@ -166,6 +222,19 @@ $(document).ready(function () {
     saveNewService(serviceData);
   });
 
+  // Function to show the popover message
+  function showPopover(message, type) {
+    const popover = $('#message-popover');
+    popover
+      .removeClass('popover-success popover-error')
+      .addClass(type === 'success' ? 'popover-success' : 'popover-error')
+      .text(message)
+      .fadeIn(300);
+
+    setTimeout(() => {
+      popover.fadeOut(300);
+    }, 3000);
+  }
   // Initial fetch
   fetchCurrentUser();
   fetchServices();
