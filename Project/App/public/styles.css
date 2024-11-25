@@ -117,5 +117,6 @@ a:hover {
   border-color: #dc3545;
   background-color: #f8d7da;
   color: #721c24;
+  z-index: 1000; /* Ensure it appears above other elements */
 }
 

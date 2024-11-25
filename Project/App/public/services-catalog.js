@@ -65,7 +65,8 @@ $(document).ready(function () {
   // Open the booking modal
   window.bookService = function (serviceId, serviceName, providerName) {
     selectedService = serviceId; // Store the selected service ID
-    $('#appointment').text(serviceName);
+    $('#bookAppointmentModalLabel').text(`Book Appointment for ${serviceName}`); // Set the modal title
+    $('#appointment').val(serviceName);
     $('#bookAppointmentModal').modal('show');
   };
 
@@ -83,9 +84,36 @@ $(document).ready(function () {
     }, 3000);
   }
 
+  function showNotification(message, type) {
+    const notification = $('#appointment-message');
+    notification
+      .removeClass('text-success text-danger')
+      .addClass(type === 'success' ? 'text-success' : 'text-danger')
+      .text(message)
+      .fadeIn(300);
+
+    setTimeout(() => {
+      notification.fadeOut(300);
+    }, 3000);
+  }
+
   // Handle form submission for booking an appointment
   $('#book-appointment-form').submit(function (e) {
     e.preventDefault(); // Prevent page reload
+
+    const appointmentDate = $('#appointment-date').val();
+    console.log(appointmentDate);
+    const selectedDate = new Date(appointmentDate);
+    const now = new Date();
+
+    // Set the time to midnight for both dates to compare only the date part
+    selectedDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    if (selectedDate <= now) {
+      showNotification('The appointment date must be in the future.', 'error');
+      return;
+    }
 
     if (!currentUser || !selectedService) {
       showPopover('Unable to book appointment. Please try again.', 'error');
@@ -95,7 +123,7 @@ $(document).ready(function () {
     const appointmentData = {
       serviceId: selectedService,
       userId: currentUser._id,
-      appointmentDate: $('#appointment-date').val(),
+      appointmentDate: appointmentDate,
     };
 
     $.ajax({
@@ -113,8 +141,6 @@ $(document).ready(function () {
       }
     });
   });
-
-
 
   // Search functionality
   const searchBar = document.getElementById('search-bar');
