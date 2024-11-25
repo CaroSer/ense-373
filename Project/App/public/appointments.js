@@ -54,7 +54,6 @@ $(document).ready(function () {
         `
        <div class="col service-card" data-name="${appointment.serviceId.name}">
           <div class="card h-100">
-            <img src="${appointment.serviceId.photo || '../public/img/default-service.jpg'}" class="card-img-top" alt="${appointment.serviceId.photo}">
            <div class="card-body">
             <h5 class="card-title">${appointment.serviceId.name}</h5>
             <p class="card-text"><strong>Description:</strong> ${appointment.serviceId.description}</p>
@@ -119,7 +118,7 @@ $(document).ready(function () {
       $('.cancel-appointment-button').click(function () {
         const appointmentId = $(this).data('id');
         const alertContainer = $(this).closest('.col').find('.alert-container');
-        handleDelete(appointmentId, alertContainer, $(this));
+        handleDelete2(appointmentId, alertContainer, $(this));
 
       });
 
@@ -154,6 +153,35 @@ $(document).ready(function () {
     }, 3000);
   }
 
+  function handleDelete2(serviceId, alertContainer, button) {
+    // Get the button's position
+    const buttonOffset = button.offset();
+    const buttonHeight = button.outerHeight();
+
+    // Style and position the alert container
+    alertContainer.css({
+      top: 250 + 'px', // Slightly below the button
+      left: 90 + 'px', // Align with the button's left edge
+      zIndex: 1000 // Ensure it floats above other elements
+    }).html(`
+      <div class="alert alert-warning" role="alert" style="width:290px">
+        Are you sure you want to cancel your appointment?
+        <button class="btn btn-sm btn-danger confirm-delete">Yes</button>
+        <button class="btn btn-sm btn-secondary cancel-delete">No</button>
+      </div>
+    `).fadeIn();
+
+    // Handle confirmation
+    alertContainer.find('.confirm-delete').click(function () {
+      cancelAppointment(serviceId, alertContainer);
+    });
+
+    // Handle cancellation
+    alertContainer.find('.cancel-delete').click(function () {
+      alertContainer.fadeOut();
+    });
+  }
+
   function handleDelete(serviceId, alertContainer, button) {
     // Get the button's position
     const buttonOffset = button.offset();
@@ -161,7 +189,7 @@ $(document).ready(function () {
 
     // Style and position the alert container
     alertContainer.css({
-      top: 265 + 'px', // Slightly below the button
+      top: 165 + 'px', // Slightly below the button
       left: 90 + 'px', // Align with the button's left edge
       zIndex: 1000 // Ensure it floats above other elements
     }).html(`
