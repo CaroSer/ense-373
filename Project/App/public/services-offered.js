@@ -24,26 +24,7 @@ $(document).ready(function () {
     });
   }
 
-  // Save new service
-  function saveNewService(serviceData) {
-    $.ajax({
-      url: '/api/services',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(serviceData),
-      success: function (newService) {
-        showPopover('Service added successfully!', 'success');
-        $('#newServiceModal').modal('hide'); // Close the modal
-        fetchServices(); // Refresh the service list
-      },
-      error: function (err) {
-        console.error('Error adding service:', err);
-        showPopover('Failed to add service. Please try again.', 'error');
-        $('#newServiceModal').modal('hide'); // Close the modal
 
-      }
-    });
-  }
 
   // Fetch all services offered by the current Medical Provider
   function fetchServices() {
@@ -158,8 +139,8 @@ $(document).ready(function () {
 
     // Style and position the alert container
     alertContainer.css({
-      top: 200 + 'px', // Slightly below the button
-      left: 100 + 'px', // Align with the button's left edge
+      top: 330 + 'px', // Slightly below the button
+      left: 160 + 'px', // Align with the button's left edge
       zIndex: 1000 // Ensure it floats above other elements
     }).html(`
       <div class="alert alert-warning" role="alert" style="width:290px">
@@ -201,26 +182,43 @@ $(document).ready(function () {
     });
   }
 
+  document.getElementById('new-service-form').addEventListener('submit', function (e) {
+    e.preventDefault(); // Prevent form from reloading the page
 
+    // Create FormData object to handle the form data, including file
+    const formData = new FormData();
 
-  // Handle form submission for adding a new service
-  $('#new-service-form').submit(function (e) {
-    e.preventDefault(); // Prevent page reload
-    const serviceData = {
-      name: $('#service-name').val(),
-      description: $('#service-description').val(),
-      cost: parseFloat($('#service-cost').val()),
-      photo: $('#service-photo')[0].files[0] ? $('#service-photo')[0].files[0].name : null, // Simplified; assumes server handles file uploads
-    };
+    // Append all form fields to FormData
+    formData.append('name', document.getElementById('service-name').value);
+    formData.append('description', document.getElementById('service-description').value);
+    formData.append('cost', document.getElementById('service-cost').value);
+    formData.append('photo', document.getElementById('service-photo').files[0]); // Make sure file is selected
 
-    // Validate input
-    if (!serviceData.name || !serviceData.description || isNaN(serviceData.cost)) {
-      alert('Please fill out all required fields.');
-      return;
-    }
-
-    saveNewService(serviceData);
+    // Send AJAX request
+    fetch('/api/services', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        // You can set other headers here, but **do not set Content-Type**. Let FormData handle that.
+        // 'Content-Type': 'multipart/form-data' // Do NOT set this manually with FormData
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Service added successfully:', data);
+        showPopover('Service added successfully!', 'success');
+        $('#newServiceModal').modal('hide'); // Close the modal
+        fetchServices(); // Refresh the service list
+        // Handle success (e.g., close modal, show success message)
+      })
+      .catch(error => {
+        console.error('Error adding service:', err);
+        showPopover('Failed to add service. Please try again.', 'error');
+        $('#newServiceModal').modal('hide'); // Close the modal
+        // Handle error
+      });
   });
+  // Save new service
 
   // Function to show the popover message
   function showPopover(message, type) {

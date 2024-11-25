@@ -99,26 +99,27 @@
           <form id="edit-service-form" enctype="multipart/form-data">
             <div class="mb-3">
               <label for="edit-service-name" class="form-label">Service Name</label>
-              <input type="text" class="form-control" id="edit-service-name" placeholder="Enter service name" required>
+              <input name="name" type="text" class="form-control" id="edit-service-name"
+                placeholder="Enter service name" required>
             </div>
             <div class="mb-3">
               <label for="edit-service-description" class="form-label">Description</label>
-              <textarea class="form-control" id="edit-service-description" rows="3"
+              <textarea name="description" class="form-control" id="edit-service-description" rows="3"
                 placeholder="Enter service description" required></textarea>
             </div>
             <div class="mb-3">
               <label for="edit-service-cost" class="form-label">Cost</label>
-              <input type="number" class="form-control" id="edit-service-cost" placeholder="Enter service cost"
-                required>
+              <input name="cost" type="number" class="form-control" id="edit-service-cost"
+                placeholder="Enter service cost" required>
             </div>
             <div class="mb-3">
               <label for="edit-service-location" class="form-label">Location</label>
-              <input type="text" class="form-control" id="edit-service-location" placeholder="Enter service location"
-                required>
+              <input name="location" type="text" class="form-control" id="edit-service-location"
+                placeholder="Enter service location" required>
             </div>
             <div class="mb-3">
               <label for="edit-service-photo" class="form-label">Photo</label>
-              <input type="file" class="form-control" id="edit-service-photo" accept="image/*">
+              <input name="photo" type="file" class="form-control" id="edit-service-photo" accept="image/*">
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -139,7 +140,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="new-service-form">
+          <form id="new-service-form" enctype="multipart/form-data">
             <div class="mb-3">
               <label for="service-name" class="form-label">Service Name</label>
               <input type="text" class="form-control" id="service-name" placeholder="Enter service name" required>
@@ -155,7 +156,7 @@
             </div>
             <div class="mb-3">
               <label for="service-photo" class="form-label">Photo</label>
-              <input type="file" class="form-control" id="service-photo" accept="image/*">
+              <input type="file" class="form-control" id="service-photo" name="photo" accept="image/*">
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -14,7 +14,25 @@ const User = require('./public/Models/User');
 const MedicalProvider = require('./public/Models/MedicalProvider');
 const Service = require('./public/Models/Service');
 const Appointment = require('./public/Models/Appointment');
+const multer = require('multer');
+const uploadsDir = path.join(__dirname, 'uploads');
+const fs = require('fs');
 
+// Create the uploads folder if it doesn't exist
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true }); // Ensure intermediate directories are created
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir); // Use the absolute path for the uploads folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage })
 
 
 mongoose.connect('mongodb://localhost:27017/medilocate');
@@ -42,6 +60,8 @@ app.set('view engine', 'ejs');
 
 // Serve static files
 app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(uploadsDir));
+
 
 // Routes
 // Middleware to check if user is authenticated
@@ -179,6 +199,7 @@ app.post('/signup-medical', async (req, res) => {
   }
 });
 
+
 //PROFILE
 // Get Profile
 app.get('/api/get-profile', isAuthenticated, async (req, res) => {
@@ -235,16 +256,22 @@ app.get('/api/services', isAuthenticated, isRole('MedicalProvider'), async (req,
   }
 });
 
+
 // Create a new service
-app.post('/api/services', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
+app.post('/api/services', upload.single('photo'), isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
   try {
-    const { name, description, cost, photo } = req.body;
+    const { name, description, cost } = req.body;
+    if (!req.file) {
+      console.log('No file uploaded');
+      return res.status(400).send('Photo is required.');
+    }
 
     const provider = await MedicalProvider.findOne({ accountId: req.user._id });
     if (!provider) {
       return res.status(404).send('Medical Provider not found.');
     }
 
+    const photo = `/uploads/${req.file.filename}`;
     const newService = await Service.create({
       name,
       description,
@@ -257,15 +284,14 @@ app.post('/api/services', isAuthenticated, isRole('MedicalProvider'), async (req
     provider.services.push(newService._id);
     await provider.save();
 
-    // Refetch the updated provider with populated services
     const updatedProvider = await MedicalProvider.findOne({ accountId: req.user._id }).populate('services');
-
     res.status(201).json(updatedProvider.services);
   } catch (error) {
     console.error('Error creating service:', error);
     res.status(500).send('Failed to create service.');
   }
 });
+
 
 // Delete a service
 app.delete('/api/services/:id', isAuthenticated, isRole('MedicalProvider'), async (req, res) => {
