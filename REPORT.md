@@ -386,20 +386,18 @@ For more details, refer to the [Milestone-Based Schedule](Documentation/Mileston
 
 #### Gantt Diagram (Fig.2):
 
-####
-
-To view in more detail, go to Gantt Diagram.[11](Documentation/Gantt%20Diagram.xlsx)
+To view, go to Gantt Diagram.[11](Documentation/Gantt%20Diagram.xlsx)
 
 
 #### Activity Diagram (Fig.3):
 
-![](Documentation\Images\activity_diagram.png)
+![Activity Diagram](Documentation\Images\activity_diagram.png)
 
 The critical path would be: M1>M2>M4>M5>M6>M7>M8.
 
 #### Table 3: Activity Diagram Table:
 
-![](Documentation\Images\table3.png)
+![Activity Diagram Table](Documentation\Images\table3.png)
 
 # Conclusion and Future Work
 
