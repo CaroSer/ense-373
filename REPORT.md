@@ -200,7 +200,7 @@ This final solution builds on the previous work while refining the features and 
 
 #### Block Diagram (Fig. 1):
 
-![Block Diagram](Documentation\Images\block_diagram.png)
+![Block Diagram](Documentation/Images/block_diagram.png)
 
 ### Features
 
