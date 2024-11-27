@@ -2,39 +2,45 @@ ENSE 374 – Software Engineering Management
 
 Adriana Carolina Garcia Serrano (200535537)
 
+To correct the links in the provided Markdown file, I'll align them with the project structure you've shared. Here's the corrected file:
+
 ### Table of Contents
 
-- **Introduction**
-- **Design Problem**
-    - Problem Definition
-    - Project Charter
-- **Solution**
-    - Solution 1
-    - Solution 2
-    - Final Solution
-        - Table 1: Solution Comparison
-        - Components
-        - Features
-        - Environmental, Societal, Safety, and Economic Considerations
-        - Limitations
-- **Teamwork**
-    - Meeting 1
-    - Meeting 2
-- **Project Management**
-- **Conclusion and Future Work**
-- **References**
+- [**Introduction**](#introduction)
+- [**Design Problem**](#design-problem)
+    - [Problem Definition](#problem-definition)
+    - [Project Charter](#project-charter)
+- [**Solution**](#solution)
+    - [Solution 1](#solution-1)
+    - [Solution 2](#solution-2)
+    - [Final Solution](#final-solution)
+        - [Table 1: Solution Comparison](#table-1-solution-comparison)
+        - [Components](#components)
+        - [Features](#features)
+        - [Environmental, Societal, Safety, and Economic Considerations](#environmental-societal-safety-and-economic-considerations)
+        - [Limitations](#limitations)
+- [**Teamwork**](#teamwork)
+    - [Meeting 1](Documentation/Meeting%20Agenda/Meeting%201.docx)
+    - [Meeting 2](Documentation/Meeting%20Agenda/Meeting%202.docx)
+- [**Project Management**](#project-management)
+- [**Conclusion and Future Work**](#conclusion-and-future-work)
+- [**References**](#references)
 
 ### List of Figures
 
-Block Diagram (Fig. 1).
-Gantt Diagram (Fig. 2)
-Activity Diagram (Fig.3).
+- [Block Diagram (Fig. 1)](Documentation/Images/block_diagram.png)
+- [Gantt Diagram (Fig. 2)](Documentation/Gantt%20Diagram.xlsx)
+- [Activity Diagram (Fig.3)](Documentation/Images/activity_diagram.png)
 
 ### List of Tables
 
-Table 1: Solution Comparison.
-Table 2: Features of MediLocate.
-Table 3: Activity Diagram Table:
+- Table 1: Solution Comparison.
+- Table 2: Features of MediLocate.
+- Table 3: [Activity Diagram Table](Documentation/Images/table3.png)
+
+Here’s the updated Markdown with clickable links that redirect to the respective files based on the provided references:
+
+---
 
 # Introduction
 
@@ -70,7 +76,7 @@ Users should search clinics by location, specialty, or needs.
 
 - Both patients and medical providers should access up-to-date availability.
 
-For detailed requirements, refer to the Project Requirements Document. [1]
+For detailed requirements, refer to the [Project Requirements Document](Documentation/Project%20Charter.pdf). [1] 
 
 #### Overview of the Document
 
@@ -90,7 +96,7 @@ Accessing healthcare in Canada should be simple, but for many, it’s a frustrat
 
 ## Problem Definition
 
-For a detailed analysis, refer to Business Case. [2]
+For a detailed analysis, refer to the [Business Case](Documentation/Business%20Case.pdf). [2]
 
 Canada’s healthcare system struggles with accessibility. With only 2.6 physicians per 1,000 people, the demand for medical services far outstrips the supply. Nearly 30% of Canadians report trouble accessing care, and 20% of patients experience delays of over a week just to see a family doctor. This imbalance frustrates patients and sometimes prevents them from receiving critical care.
 
@@ -108,7 +114,7 @@ Without an efficient system, patients and providers both suffer from mismanaged 
 
 ## Project Charter
 
-For more details, refer to the Project Charter.
+For more details, refer to the [Project Charter](Documentation/Project%20Charter.pdf).
 
 MediLocate addresses these problems by offering a streamlined, web-based solution that simplifies appointment booking for patients and eases scheduling management for medical providers. This platform is designed to reduce inefficiencies, improve patient access, and support healthcare providers in delivering quality care.
 
@@ -194,7 +200,7 @@ This final solution builds on the previous work while refining the features and 
 
 #### Block Diagram (Fig. 1):
 
-![[Pasted image 20241127155456.png]]
+![](Documentation\Images\block_diagram.png)
 
 ### Features
 
@@ -232,38 +238,168 @@ This final solution builds on the previous work while refining the features and 
 
 The team's effort was not present throughout the development of the project, which meant that the workload was carried out by Adriana Carolina Garcia Serrano and as the project continued to advance, the team promised to work, but in the end they procrastinated. tasks, which jeopardized the flow of the milestones, causing Adriana Carolina Garcia Serrano to complete the milestones again on her own, as could be seen in the meetings that were held, it was possible to continue with the workflow, presenting the deliverables in time and form in the meetings with the product owner, in the same way as can be seen in the issue log, various meetings were held with the work team by Adriana Carolina Garcia Serrano, where she showed her disagreements, culminating in the separation of the team because they could not have good work synergy.
 
+Here is the completed Markdown with all references linked:
+
+---
+
+# Introduction
+
+MediLocate is a web-based application designed to streamline how Canadians book medical appointments, addressing common frustrations like long wait times and communication barriers. Traditional appointment booking methods are often inefficient, leaving patients frustrated and clinics overwhelmed. MediLocate offers a user-friendly platform for patients to easily schedule appointments and for medical staff to manage their availability.
+
+The rationale for this project stems from the urgent need to modernize healthcare access. With the rise of digital solutions, there’s a clear demand for a platform that simplifies the booking process while maintaining flexibility and reliability for both patients and healthcare providers. MediLocate’s design aims to fill this gap by providing a seamless and accessible solution.
+
+### Project Requirements
+
+Stakeholders have outlined the following key requirements for MediLocate:
+
+- User-Friendly Web-Based Platform:
+    Create an accessible platform. It should be intuitive for all users, offering quick and clear navigation.
+
+- Secure User Authentication:
+    Ensure secure and seamless access for patients and medical staff.
+
+- Enhanced Appointment Scheduling:
+    Provide an intuitive interface for booking, canceling, and managing appointments.
+
+- Real-Time Updates:
+    Enable live availability tracking for patients and providers.
+
+- Search and Filtering:
+
+Users should search clinics by location, specialty, or needs.
+
+#### Roles:
+
+- Patients should be able to browse clinics, view availability, and book appointments.
+
+- Medical staff should manage schedules, update availability, and share information.
+
+- Both patients and medical providers should access up-to-date availability.
+
+For detailed requirements, refer to the [Project Requirements Document](Documentation/Project%20Charter.pdf). [1]
+
+#### Overview of the Document
+
+The next sections will provide:
+
+- Design Problem Analysis: A detailed breakdown of challenges in the current appointment scheduling process.
+
+- Proposed Solutions: Exploration of design alternatives and justification for the chosen approach.
+
+- Implementation Plan: Key technical details and project roadmap.
+
+- Project Management Plan: Strategies for development, testing, and deployment phases.
+
+# Design Problem
+
+Accessing healthcare in Canada should be simple, but for many, it’s a frustrating process. Despite the universal healthcare system, patients face long waits, challenges in booking appointments, and limited clinic availability. These issues are more than inconveniences—they can delay diagnoses and treatments, leading to serious health risks.
+
+## Problem Definition
+
+For a detailed analysis, refer to the [Business Case](Documentation/Business%20Case.pdf). [2]
+
+Canada’s healthcare system struggles with accessibility. With only 2.6 physicians per 1,000 people, the demand for medical services far outstrips the supply. Nearly 30% of Canadians report trouble accessing care, and 20% of patients experience delays of over a week just to see a family doctor. This imbalance frustrates patients and sometimes prevents them from receiving critical care.
+
+The impact is widespread:
+
+- Patients’ Health: Delayed care can worsen medical conditions, increase anxiety, and lower quality of life.
+
+- Rural Disparities: People in remote areas face even more obstacles, with fewer healthcare facilities and long travel times.
+
+- Clinic Operations: Manual appointment scheduling adds administrative strain, increases errors, and reduces efficiency.
+
+- Provider Burnout: Overloaded clinics struggle to manage patient flow, often leading to staff burnout and declining care quality.
+
+Without an efficient system, patients and providers both suffer from mismanaged resources and unmet needs.
+
+## Project Charter
+
+For more details, refer to the [Project Charter](Documentation/Project%20Charter.pdf). [1]
+
+---
+
+# Solution
+
+In this section, we provide an account of some solutions our team brainstormed to implement the MediLocate project. Each solution varied in its approach, features, and the ability to meet the constraints outlined in the business case. The iterative nature of engineering design allowed us to refine these ideas until we selected the final solution that best balanced all requirements.
+
+MediLocate was conceived to bridge the gap in healthcare accessibility by offering a platform where medical providers can efficiently manage their availability, and patients can seamlessly book appointments. This system helps reduce wait times, improve healthcare service efficiency, and ensure that the patients have timely access to necessary care.
+
+## Solution 1
+
+Our initial solution was a basic platform allowing patients to search for clinics by specialty and location and view the services offered by each clinic. This system aimed to provide patients with a centralized place to access clinic information.
+
+#### Reasons for Not Selecting:
+
+While the idea improved access to clinic details, it lacked essential features for an effective healthcare platform:
+
+- Booking Functionality: Patients could view clinic information but had no option to book appointments directly, requiring them to contact clinics manually.
+
+- Dynamic Scheduling Options: Clinics could not adjust service flexibly to reflect changes.
+
+These limitations hindered the platform from addressing the full needs of both patients and providers, leading us to develop a more comprehensive solution.
+
+Without these features, the solution wouldn't provide the full value needed for a seamless healthcare experience, and we decided to move forward with more comprehensive alternatives.
+
+## Solution 2
+
+The second solution improved upon the first by integrating an interactive map using the Google Maps API, displaying clinics near a user's location. This approach provided a more intuitive and visual way for patients to find and book appointments with local clinics, offering details like addresses, operating hours, and available services. Additionally, we planned accessibility features such as text-to-speech for visually impaired users.
+
+#### Challenges:
+
+- Integrating Google Maps with real-time scheduling data was complex and could create maintenance challenges.
+
+- Development time for accessibility features would require additional resources and testing.
+
+This solution addressed usability and accessibility, but the technical complexities and additional time needed for accessibility features meant it wasn't quite the best fit for the project at this stage.
+
+## Final Solution
+
+#### Solution Overview
+
+This final solution incorporates the most critical features to enhance the user experience for both patients and healthcare providers. It combines a robust appointment scheduling system, the ability for patients to easily find the right healthcare professional, and upfront visibility into the costs of medical services. It also focuses on simplifying appointment management for medical professionals to help them gain more patients and keep their schedules organized.
+
+#### Why this solution is better:
+
+This solution addresses the business needs identified in the case by enabling both patients and healthcare providers to efficiently book and manage appointments. By offering transparent service pricing, and simplifying the process of finding medical professionals, it helps build trust and ensures a smooth experience for all users.
+
+---
+
+# Teamwork
+
 ## Meeting 1
 
-- Meeting Agenda[3]
-- Meeting Minutes[4]
-- Project Status Report[5]
+- [Meeting Agenda](Documentation/Meeting%20Agenda/Meeting%201.docx). [3]
+- [Meeting Minutes](Documentation/Meeting%20Minute/Meeting-1%20Minutes.docx). [4]
+- [Project Status Report](Documentation/Status%20Reports/Project%20Status%20Report.pdf). [5]
 
 ## Meeting 2
 
-- Meeting Agenda[6]
-- Meeting Minutes[7]
-- Project Status Report[8]
-- Issue log [9]
+- [Meeting Agenda](Documentation/Meeting%20Agenda/Meeting%202.docx). [6]
+- [Meeting Minutes](Documentation/Meeting%20Minute/Meeting-2%20Minutes.docx). [7]
+- [Project Status Report](Documentation/Status%20Reports/Project%20Status%20Report-2.pdf). [8]
+- [Issue Log](Documentation/Issue%20Log.pdf). [9]
 
+---
 # Project Management
 
-For more details, refer to the Milestone-Based Schedule.[10]
+For more details, refer to the [Milestone-Based Schedule](Documentation/Milestone-Based%20Schedule.pdf). [10]
 
 #### Gantt Diagram (Fig.2):
 
 ####
 
-To view in more detail, go to Gantt Diagram.[11]
+To view in more detail, go to Gantt Diagram.[11](Documentation/Gantt%20Diagram.xlsx)
+
 
 #### Activity Diagram (Fig.3):
 
-![[Pasted image 20241127155751.png]]
+![](Documentation\Images\activity_diagram.png)
 
 The critical path would be: M1>M2>M4>M5>M6>M7>M8.
 
 #### Table 3: Activity Diagram Table:
 
-![[Pasted image 20241127155801.png]]
+![](Documentation\Images\table3.png)
 
 # Conclusion and Future Work
 
@@ -273,8 +409,9 @@ Despite the progress made, several limitations remain. Notably, the solution lac
 
 #### Lessons Learned Report
 
-A detailed overview of the key takeaways and insights gained throughout the development process can be found in the Lessons Learned Report. [12]
+A detailed overview of the key takeaways and insights gained throughout the development process can be found in the [Lessons Learned Report](Documentation/Lessons%20Learned%20Report.pdf). [12]
 
+---
 #### Recommendations for Future Design Improvements
 
 - Authentication for Medical Professionals: Future versions of the system should incorporate proper authentication mechanisms to ensure that only authorized medical professionals can access sensitive patient and appointment data.
@@ -290,27 +427,28 @@ A detailed overview of the key takeaways and insights gained throughout the deve
 - In summary, while the current system serves as a solid foundation for appointment scheduling and patient management, there are ample opportunities for future enhancements that would improve security, usability, and overall functionality.
 
 # References
+Here are the corrected references with respective URLs and the updated author name:
 
-[1] MediLocate Project, Project Charter, Saskatchewan Health Authority, 2024. [Online]. Available: internal project repository.
+[1] MediLocate Project, Project Charter, Carolina Serrano, 2024. [Online]. Available: `Documentation/Project%20Charter.pdf`.
 
-[2] MediLocate Project, Business Case, Saskatchewan Health Authority, 13 de septiembre de 2024. [Online]. Available: internal project repository.
+[2] MediLocate Project, Business Case, Carolina Serrano, 13 de septiembre de 2024. [Online]. Available: `Documentation/Business%20Case.pdf`.
 
-[3] MediLocate Project, Meeting 1 Agenda, Archer Archive, Dr. John Archer Library, 2024. [Online]. Available: internal project repository.
+[3] MediLocate Project, Meeting 1 Agenda, Carolina Serrano, 2024. [Online]. Available: `Documentation/Meeting%20Agenda/Meeting%201.docx`.
 
-[4] MediLocate Project, Meeting 1 Minutes, Archer Archive, Dr. John Archer Library, 2024. [Online]. Available: internal project repository.
+[4] MediLocate Project, Meeting 1 Minutes, Carolina Serrano, 2024. [Online]. Available: `Documentation/Meeting%20Minute/Meeting-1%20Minutes.docx`.
 
-[5] MediLocate Project, Project Status Report, 06-10-2024. [Online]. Available: internal project repository.
+[5] MediLocate Project, Project Status Report, Carolina Serrano, 06-10-2024. [Online]. Available: `Documentation/Status%20Reports/Project%20Status%20Report.pdf`.
 
-[6] MediLocate Project, Meeting 2 Agenda, Archer Archive, Dr. John Archer Library, 2024. [Online]. Available: internal project repository.
+[6] MediLocate Project, Meeting 2 Agenda, Carolina Serrano, 2024. [Online]. Available: `Documentation/Meeting%20Agenda/Meeting%202.docx`.
 
-[7] MediLocate Project, Meeting 2 Minutes, Archer Archive, Dr. John Archer Library, 2024. [Online]. Available: internal project repository.
+[7] MediLocate Project, Meeting 2 Minutes, Carolina Serrano, 2024. [Online]. Available: `Documentation/Meeting%20Minute/Meeting-2%20Minutes.docx`.
 
-[8] MediLocate Project, Project Status Report 2, 22-11-2024. [Online]. Available: internal project repository.
+[8] MediLocate Project, Project Status Report 2, Carolina Serrano, 22-11-2024. [Online]. Available: `Documentation/Status%20Reports/Project%20Status%20Report-2.pdf`.
 
-[9] MediLocate Project, Issue Log, 2024. [Online]. Available: internal project repository.
+[9] MediLocate Project, Issue Log, Carolina Serrano, 2024. [Online]. Available: `Documentation/Issue%20Log.pdf`.
 
-[10] MediLocate Project, Milestone-Based Schedule, Saskatchewan Health Authority, 2024. [Online]. Available: internal project repository.
+[10] MediLocate Project, Milestone-Based Schedule, Carolina Serrano, 2024. [Online]. Available: `Documentation/Milestone-Based%20Schedule.pdf`.
 
-[11] MediLocate Project, Gantt Diagram, Saskatchewan Health Authority, 2024. [Online]. Available: internal project repository.
+[11] MediLocate Project, Gantt Diagram, Carolina Serrano, 2024. [Online]. Available: `Documentation/Gantt%20Diagram.xlsx`.
 
-[12] MediLocate Project, Lessons Learned Report, Saskatchewan Health Authority, 2024. [Online]. Available: internal project repository.
+[12] MediLocate Project, Lessons Learned Report, Carolina Serrano, 2024. [Online]. Available: `Documentation/Lessons%20Learned%20Report.pdf`.
